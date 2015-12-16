@@ -1,0 +1,4 @@
+OGAPI_BASE_URI = 'http://cloud.opengate.es:25281/v70'
+ORGANIZATION = 'your_organization'
+CHANNEL = 'default_channel'
+API_KEY = 'your_api_key'
