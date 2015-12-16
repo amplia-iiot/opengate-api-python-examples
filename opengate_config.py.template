@@ -1,0 +1,4 @@
+OGAPI_BASE_URI = 'http://cloud.opengate.es:25281/v70'
+ORGANIZATION = 'KontronPoC'
+CHANNEL = 'default_channel'
+API_KEY = '38e94e0f-d86d-44e3-8b9a-4492737854bb'
