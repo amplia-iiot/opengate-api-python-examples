@@ -1,4 +1,4 @@
 .idea
 *.pyc
-opengate_config.py
+opengate_config_template.py
 

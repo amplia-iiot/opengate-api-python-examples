@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-device_crud.py [-options]
+device_north_crud.py [-options]
 Options:
 -h, --help
 -c, --create
@@ -16,7 +16,7 @@ import json
 import sys
 import getopt
 
-ogapi_devices_uri = '{0}/provision/organizations/{1}/entities/devices'.format(conf.OGAPI_BASE_URI, conf.ORGANIZATION)
+ogapi_devices_uri = '{0}/provision/organizations/{1}/entities/devices'.format(conf.OG_NORTH_API_BASE_URI, conf.ORGANIZATION)
 headers = {
     'X-ApiKey': conf.API_KEY,
     'Content-Type': 'application/json'
@@ -34,6 +34,8 @@ def get_device(id, serial=None):
                 'specificType': [
                     'CONCENTRATOR'
                 ],
+                'name' : ['{0}'.format(id)],
+                'description' : ['Device for testing purposes'],
                 'admin': {
                     'organization': conf.ORGANIZATION,
                     'channel': conf.CHANNEL,
