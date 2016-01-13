@@ -14,13 +14,20 @@ import sys
 import getopt
 import time
 import datetime
-
-current_milli_time = lambda: int(round(time.time() * 1000))
+import random
 
 headers = {
     'X-ApiKey': conf.API_KEY,
     'Content-Type': 'application/json'
 }
+
+
+def current_milli_time():
+    return long(round(time.time()))
+
+
+def add_some_noise(randomize_this):
+    return randomize_this + random.randint(-5, 5)
 
 
 def get_device(id):
@@ -53,13 +60,13 @@ def get_device(id):
                 'location': {
                     'timestamp': datetime.datetime.now().isoformat(),
                     'coordinates': {
-                        'latitude': 42.41677,
+                        'latitude': 42.41675,
                         'longitude': -3.7028
                     }
                 },
                 'temperature': {
                     'unit': 'C',
-                    'current': '33',
+                    'current': add_some_noise(33),
                     'status': 'NORMAL',
                     'trend': 'DECREASING',
                     'average': '20',
@@ -73,7 +80,7 @@ def get_device(id):
                     'batteryChargeLevel': {
                         'trend': 'EMPTY',
                         'status': 'CHARGED',
-                        'percentage': '50'
+                        'percentage': add_some_noise(50)
                     }
                 },
                 'communicationsModules': [
@@ -105,7 +112,7 @@ def get_device(id):
 
 def update(id):
     print 'Updating device {0}'.format(id)
-    device_as_json = json.dumps(get_device(id))
+    device_as_json = json.dumps(get_device(id), indent=2)
     print device_as_json
     ogapi_devices_uri = '{0}/devices/{1}/collect/dmm'.format(conf.OG_SOUTH_API_BASE_URI, id)
     r = requests.post(ogapi_devices_uri, data=device_as_json, headers=headers)
@@ -121,7 +128,15 @@ def main():
         print 'for help use --help'
         sys.exit(2)
 
-    device_id = conf.DEFAULT_DEVICE_ID
+    device_id = None
+    if conf.DEFAULT_DEVICE_ID is not None:
+        device_id = conf.DEFAULT_DEVICE_ID
+    else:
+        try:
+            device_id_file = open('.device_id', 'r')
+            device_id = device_id_file.read().strip()
+        except IOError:
+            print 'Can\'t read device_id file'
 
     for o, a in opts:  # process options
         if o in ('-h', '--help'):
@@ -133,7 +148,10 @@ def main():
             print __doc__
             sys.exit(0)
 
-    update(device_id)
+    if device_id is None:
+        print 'Please, provide a device identifier'
+    else:
+        update(device_id)
 
 
 if __name__ == '__main__':

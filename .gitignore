@@ -1,4 +1,7 @@
 .idea
+.device_id
+.wifi_id
+.relation_id
 *.pyc
 opengate_config.py
 

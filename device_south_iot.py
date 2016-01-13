@@ -8,19 +8,27 @@ Options:
 
 import opengate_config as conf
 import requests
-import uuid
 import json
 import sys
 import getopt
 import time
-import datetime
+import random
 
-current_milli_time = lambda: int(round(time.time() * 1000))
+
+def current_milli_time():
+    return long(round(time.time()))
+
 
 headers = {
     'X-ApiKey': conf.API_KEY,
     'Content-Type': 'application/json'
 }
+
+burst_size = 5
+
+
+def add_some_noise(randomize_this):
+    return randomize_this + random.randint(1, 100)
 
 
 def get_data_points():
@@ -31,28 +39,28 @@ def get_data_points():
                 'id': 'health.glucose.concentration',
                 'feed': 'health',
                 'datapoints': [
-                    {'at': current_milli_time(), 'value': 200}
+                    {'at': current_milli_time(), 'value': add_some_noise(201)}
                 ]
             },
             {
                 'id': 'health.bodycomposition.weight',
                 'feed': 'health',
                 'datapoints': [
-                    {'at': current_milli_time(), 'value': 12.56}
+                    {'at': current_milli_time(), 'value': add_some_noise(71.5)}
                 ]
             },
             {
                 'id': 'health.bloodpresure.pulserate',
                 'feed': 'health',
                 'datapoints': [
-                    {'at': current_milli_time(), 'value': 62}
+                    {'at': current_milli_time(), 'value': add_some_noise(76)}
                 ]
             },
             {
                 'id': 'health.bloodpresure.systolic',
                 'feed': 'health',
                 'datapoints': [
-                    {'at': current_milli_time(), 'value': 62}
+                    {'at': current_milli_time(), 'value': add_some_noise(69)}
                 ]
             }
         ]
@@ -62,13 +70,16 @@ def get_data_points():
 
 
 def update(id):
-    print 'Sending IoT data {0}'.format(id)
-    device_as_json = json.dumps(get_data_points())
-    print device_as_json
-    ogapi_devices_uri = '{0}/devices/{1}/collect/iot'.format(conf.OG_SOUTH_API_BASE_URI, id)
-    r = requests.post(ogapi_devices_uri, data=device_as_json, headers=headers)
-    print 'Status code received {}'.format(r.status_code)
-    print r.text
+    print 'Sending a burst of {0} request'.format(burst_size)
+    for i in range(burst_size):
+        print 'Sending IoT data {0}'.format(id)
+        device_as_json = json.dumps(get_data_points(), indent=2)
+        print device_as_json
+        ogapi_devices_uri = '{0}/devices/{1}/collect/iot'.format(conf.OG_SOUTH_API_BASE_URI, id)
+        r = requests.post(ogapi_devices_uri, data=device_as_json, headers=headers)
+        print 'Status code received {}'.format(r.status_code)
+        print r.text
+        time.sleep(1)
 
 
 def main():
@@ -79,7 +90,15 @@ def main():
         print 'for help use --help'
         sys.exit(2)
 
-    device_id = conf.DEFAULT_DEVICE_ID
+    device_id = None
+    if conf.DEFAULT_DEVICE_ID is not None:
+        device_id = conf.DEFAULT_DEVICE_ID
+    else:
+        try:
+            device_id_file = open('.device_id', 'r')
+            device_id = device_id_file.read().strip()
+        except IOError:
+            print 'Can\'t read device_id file'
 
     for o, a in opts:  # process options
         if o in ('-h', '--help'):
@@ -91,7 +110,10 @@ def main():
             print __doc__
             sys.exit(0)
 
-    update(device_id)
+    if device_id is None:
+        print 'Please, provide a device identifier'
+    else:
+        update(device_id)
 
 
 if __name__ == '__main__':
