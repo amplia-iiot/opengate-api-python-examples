@@ -41,11 +41,11 @@ def get_device(id):
                 'hardware': {
                     'serialnumber': str(uuid.uuid4()),
                     'manufacturer': {
-                        'name': 'amplia)))',
+                        'name': 'charlie',
                         'oui': '41-B9-72'
                     },
                     'model': {
-                        'name': 'BloodPressure'
+                        'name': 'Virtual-Test-Charlie-Device'
                     }
                 },
                 'softwareList': [

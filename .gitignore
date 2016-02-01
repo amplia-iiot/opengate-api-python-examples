@@ -4,4 +4,4 @@
 .relation_id
 *.pyc
 opengate_config.py
-
+from-opengate-deployment-element.txt

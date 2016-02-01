@@ -12,31 +12,15 @@ import json
 import sys
 import getopt
 
+OPERATION_NAME_REBOOT = 'REBOOT_EQUIPMENT'
+OPERATION_NAME_UPDATE = 'UPDATE'
+
 ogapi_jobs_uri = '{0}/operation/jobs'.format(conf.OG_NORTH_API_BASE_URI)
 
 headers = {
     'X-ApiKey': conf.API_KEY,
     'Content-Type': 'application/json'
 }
-
-
-def get_job(device_id):
-    job = {
-        "job": {
-            "request": {
-                "name": "REBOOT_EQUIPMENT",
-                "parameters": [{"name": "type", "type": "string", "value": {"string": "HARDWARE"}}],
-                "active": True,
-                "notify": False,
-                "userNotes": "Reboot equipment test",
-                "schedule": {"stop": {"delayed": "150000"}},
-                "operationParameters": {"timeout": 60000},
-                "target": {"append": {"entities": [device_id]}}
-            }
-        }
-    }
-
-    return job
 
 
 def http_post(entity_id, entity_as_json, entity_uri):
@@ -47,7 +31,45 @@ def http_post(entity_id, entity_as_json, entity_uri):
 
 
 def reboot(device_id):
-    job_as_json = json.dumps(get_job(device_id), indent=2)
+    reboot_job = {
+        'job': {
+            'request': {
+                'name': OPERATION_NAME_REBOOT,
+                'parameters': [{'name': 'type', 'type': 'string', 'value': {'string': 'HARDWARE'}}],
+                'active': True,
+                'notify': False,
+                'userNotes': 'Reboot equipment test',
+                'schedule': {'stop': {'delayed': '150000'}},
+                'operationParameters': {'timeout': 60000},
+                'target': {'append': {'entities': [device_id]}}
+            }
+        }
+    }
+    job_as_json = json.dumps(reboot_job, indent=2)
+    http_post(device_id, job_as_json, ogapi_jobs_uri)
+
+
+def update(device_id):
+    update_job = {
+        'job': {
+            'request': {
+                'name': 'UPDATE',
+                'parameters': [
+                    {'name': 'bundleName', 'value': {'string': conf.BUNDLE_NAME}},
+                    {'name': 'bundleVersion', 'value': {'string': conf.BUNDLE_VERSION}}
+                ],
+                'active': True,
+                'schedule': {'stop': {'delayed': 300000}},
+                'operationParameters': {'timeout': 60000},
+                'target': {
+                    'append': {
+                        'entities': [device_id]
+                    }
+                }
+            }
+        }
+    }
+    job_as_json = json.dumps(update_job, indent=2)
     http_post(device_id, job_as_json, ogapi_jobs_uri)
 
 
@@ -68,7 +90,7 @@ def load_id():
 
 def main():
     try:  # parse command line options
-        opts, args = getopt.getopt(sys.argv[1:], 'hr', ['help', 'reboot'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hru', ['help', 'reboot', 'update'])
     except getopt.error, msg:
         print msg
         print 'for help use --help'
@@ -86,6 +108,8 @@ def main():
             sys.exit(0)
         elif o in ('-r', '--read'):
             reboot(device_id)
+        elif o in ('-u', '--update'):
+            update(device_id)
         else:
             print __doc__
             sys.exit(0)
