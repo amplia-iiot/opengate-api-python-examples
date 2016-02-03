@@ -41,11 +41,11 @@ def get_device(id):
                 'hardware': {
                     'serialnumber': str(uuid.uuid4()),
                     'manufacturer': {
-                        'name': 'charlie',
+                        'name': conf.MANUFACTURER,
                         'oui': '41-B9-72'
                     },
                     'model': {
-                        'name': 'Virtual-Test-Charlie-Device'
+                        'name': conf.MODEL_NAME
                     }
                 },
                 'softwareList': [

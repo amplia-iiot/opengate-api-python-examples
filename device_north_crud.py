@@ -78,7 +78,7 @@ def get_wifi_interface(wifi_id):
                     {
                         'type': 'IPV4',
                         'value': '217.126.182.38',
-                        'apn': 'kontron'
+                        'apn': 'movistar.es'
                     }
                 ]
             }
@@ -91,7 +91,7 @@ def get_wifi_interface(wifi_id):
 def get_device_wifi_relation(device_id, wifi_id):
     relation = {
         'relation': {
-            'template': 'default_ref',
+            'template': 'default',
             'links': [
                 {'entityType': 'DEVICE', 'id': device_id},
                 {'entityType': 'SUBSCRIPTION', 'id': wifi_id}

@@ -5,7 +5,6 @@ import json
 from flask import Flask
 from flask import request
 import requests
-from requests.auth import HTTPBasicAuth
 
 app = Flask(__name__)
 
@@ -50,7 +49,7 @@ def update(content):
                 download_url = deployment_element['downloadUrl']
                 file_path = deployment_element['path']
                 print 'Downloading {0}...'.format(download_url)
-                r = requests.get(download_url, headers=headers, auth=HTTPBasicAuth('amplia', 'amplia'), stream=True)
+                r = requests.get(download_url, headers=headers, stream=True)
                 print 'Status code received {}'.format(r.status_code)
                 if r.status_code == 200:
                     print 'Writting file to disk...'
