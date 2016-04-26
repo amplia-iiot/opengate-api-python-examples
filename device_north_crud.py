@@ -9,6 +9,8 @@ Options:
 -d, --delete=deviceid
 '''
 
+
+import random
 import opengate_config as conf
 import requests
 import uuid
@@ -16,14 +18,21 @@ import json
 import sys
 import getopt
 
-ogapi_devices_uri = '{0}/provision/organizations/{1}/entities/devices'.format(conf.OG_NORTH_API_BASE_URI,
-                                                                              conf.ORGANIZATION)
+ogapi_devices_uri = '{0}/provision/organizations/{1}/entities/devices'.format(
+    conf.OG_NORTH_API_BASE_URI,
+    conf.ORGANIZATION)
 
-ogapi_wifi_uri = '{0}/provision/organizations/{1}/entities/subscriptions'.format(conf.OG_NORTH_API_BASE_URI,
-                                                                                 conf.ORGANIZATION)
+ogapi_wifi_uri = '{0}/provision/organizations/{1}/entities/subscriptions'.format(
+    conf.OG_NORTH_API_BASE_URI,
+    conf.ORGANIZATION)
+ogapi_comm_modules_uri = '{0}/provision/organizations/{1}/entities/communicationsModules'.format(
+    conf.OG_NORTH_API_BASE_URI,
+    conf.ORGANIZATION)
 
-ogapi_relation_uri = '{0}/provision/organizations/{1}/entities/relations'.format(conf.OG_NORTH_API_BASE_URI,
-                                                                                 conf.ORGANIZATION)
+ogapi_relation_uri = '{0}/provision/organizations/{1}/entities/relations'.format(
+    conf.OG_NORTH_API_BASE_URI,
+    conf.ORGANIZATION)
+
 headers = {
     'X-ApiKey': conf.API_KEY,
     'Content-Type': 'application/json'
@@ -46,7 +55,9 @@ def get_device(id, serial=None):
                     'channel': conf.CHANNEL,
                     'administrativeState': 'ACTIVE',
                     'serviceGroup': 'emptyServiceGroup'
-                }
+                },
+                # uncomment the following line if you want to reference the device model
+                #'hardware': [conf.MODEL_NAME]
             }
         }
     }
@@ -67,7 +78,7 @@ def get_wifi_interface(wifi_id):
                 'template': 'default',
                 'name': [wifi_id],
                 'specificType': ['WIFI'],
-                'description': ['Wi-Fi interface for testing'],
+                'description': ['Wi-Fi subscription for testing'],
                 'admin': {
                     'organization': conf.ORGANIZATION,
                     'channel': conf.CHANNEL,
@@ -78,7 +89,7 @@ def get_wifi_interface(wifi_id):
                     {
                         'type': 'IPV4',
                         'value': '217.126.182.38',
-                        'apn': 'movistar.es'
+                        'apn': 'kontron'
                     }
                 ]
             }
@@ -88,13 +99,44 @@ def get_wifi_interface(wifi_id):
     return wifi_interface
 
 
-def get_device_wifi_relation(device_id, wifi_id):
+def get_zigbee_communication_module(zigbee_id):
+    zigbee_interface = {
+        'communicationsModule': {
+            'id': zigbee_id,
+            'provision': {
+                'customId': [zigbee_id],
+                'template': 'default',
+                'specificType': ['ZIGBEE'],
+                'name': [zigbee_id],
+                'description': ['ZigBee communications module for testing'],
+                'admin': {
+                    'organization': conf.ORGANIZATION,
+                    'channel': conf.CHANNEL,
+                    'administrativeState': 'ACTIVE',
+                    'serviceGroup': 'emptyServiceGroup'
+                },
+                'mac': [
+                    '52:54:00:%02x:%02x:%02x' % (
+                        random.randint(0, 255),
+                        random.randint(0, 255),
+                        random.randint(0, 255),
+                    )
+                ]
+            }
+        }
+    }
+
+    return zigbee_interface
+
+
+def get_relations(device_id, wifi_id, zigbee_id):
     relation = {
         'relation': {
             'template': 'default',
             'links': [
                 {'entityType': 'DEVICE', 'id': device_id},
-                {'entityType': 'SUBSCRIPTION', 'id': wifi_id}
+                {'entityType': 'SUBSCRIPTION', 'id': wifi_id},
+                {'entityType': 'COMMUNICATIONS_MODULE', 'id': zigbee_id}
             ]
         }
     }
@@ -107,6 +149,11 @@ def http_post(entity_type, entity_id, entity_as_json, entity_uri):
     print entity_as_json
     r = requests.post(entity_uri, data=entity_as_json, headers=headers)
     print 'Status code received {}'.format(r.status_code)
+    try:
+        print json.dumps(r.json(), indent=2)
+    except:
+        pass
+
     # A file with the entity id is create for further DMM & IoT operations
     # See device_south_dmm.py & device_south_iot.py
     try:
@@ -125,7 +172,11 @@ def create():
     wifi_as_json = json.dumps(get_wifi_interface(wifi_id), indent=2)
     http_post('wifi', wifi_id, wifi_as_json, ogapi_wifi_uri)
 
-    relation_as_json = json.dumps(get_device_wifi_relation(device_id, wifi_id), indent=2)
+    zigbee_id = str(uuid.uuid4())
+    zigbee_as_json = json.dumps(get_zigbee_communication_module(zigbee_id), indent=2)
+    http_post('zigbee', zigbee_id, zigbee_as_json, ogapi_comm_modules_uri)
+
+    relation_as_json = json.dumps(get_relations(device_id, wifi_id, zigbee_id), indent=2)
     http_post('relation', device_id, relation_as_json, '{0}?action=CREATE'.format(ogapi_relation_uri))
 
 

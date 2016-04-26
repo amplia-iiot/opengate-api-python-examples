@@ -31,6 +31,15 @@ def add_some_noise(randomize_this):
 
 
 def get_device(id):
+
+    zigbee_id = str(uuid.uuid4())
+    try:
+        zigbee_id_file = open('.zigbee_id', 'r')
+        zigbee_id = zigbee_id_file.read().strip()
+    except IOError:
+        print 'Can\'t read zigbiee_id file'
+
+
     device = {
         'event': {
             'id': '{0}'.format(current_milli_time()),
@@ -100,6 +109,18 @@ def get_device(id):
                         'subscription': {
                             'name': 'bluetooh_network',
                             'description': 'Bluetooth Network'
+                        }
+                    },
+                    {
+                        'id': zigbee_id,
+                        'name': 'ZigBee Module',
+                        'type': 'ZIGBEE',
+                        'hardware': {
+                            'serialnumber': '52:54:00:%02x:%02x:%02x' % (
+                                random.randint(0, 255),
+                                random.randint(0, 255),
+                                random.randint(0, 255),
+                            )
                         }
                     }
                 ]

@@ -28,6 +28,7 @@ def http_post(entity_id, entity_as_json, entity_uri):
     print entity_as_json
     r = requests.post(entity_uri, data=entity_as_json, headers=headers)
     print 'Status code received {}'.format(r.status_code)
+    print json.dumps(r.json(), indent=2)
 
 
 def reboot(device_id):
