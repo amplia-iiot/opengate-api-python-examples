@@ -1,6 +1,7 @@
 .idea
 .device_id
 .wifi_id
+.zigbee_id
 .relation_id
 *.pyc
 opengate_config.py
