@@ -19,8 +19,9 @@ The recommended way to install the dependencies is using [`pip`](https://pypi.py
 Here you have the commands to install it.
 
 ```
-sudo pip install request
-sudo pip install Flask
+pip install request
+pip install Flask
+pip install websocket-client
 ```
 
 ## North API Interface Features
