@@ -19,11 +19,6 @@ def current_milli_time():
     return long(round(time.time()))
 
 
-headers = {
-    'X-ApiKey': conf.API_KEY,
-    'Content-Type': 'application/json'
-}
-
 burst_size = 5
 
 
@@ -76,7 +71,7 @@ def update(id):
         device_as_json = json.dumps(get_data_points(), indent=2)
         print device_as_json
         ogapi_devices_uri = '{0}/devices/{1}/collect/iot'.format(conf.OG_SOUTH_API_BASE_URI, id)
-        r = requests.post(ogapi_devices_uri, data=device_as_json, headers=headers)
+        r = requests.post(ogapi_devices_uri, data=device_as_json, headers=conf.HEADERS)
         print 'Status code received {}'.format(r.status_code)
         print r.text
         time.sleep(1)

@@ -16,11 +16,6 @@ import time
 import datetime
 import random
 
-headers = {
-    'X-ApiKey': conf.API_KEY,
-    'Content-Type': 'application/json'
-}
-
 
 def current_milli_time():
     return long(round(time.time()))
@@ -136,7 +131,7 @@ def update(id):
     device_as_json = json.dumps(get_device(id), indent=2)
     print device_as_json
     ogapi_devices_uri = '{0}/devices/{1}/collect/dmm'.format(conf.OG_SOUTH_API_BASE_URI, id)
-    r = requests.post(ogapi_devices_uri, data=device_as_json, headers=headers)
+    r = requests.post(ogapi_devices_uri, data=device_as_json, headers=conf.HEADERS)
     print 'Status code received {}'.format(r.status_code)
     print r.text
 

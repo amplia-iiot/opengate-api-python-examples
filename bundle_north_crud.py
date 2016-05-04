@@ -84,10 +84,12 @@ def create_deployment_element():
             'order': '1',
             'operation': 'INSTALL',
             'option': 'MANDATORY',
-            'validator': {
-                'type': 'SHA-256',
-                'value': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
-            }
+            'validators': [
+                {
+                    'type': 'SHA-256',
+                    'value': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+                }
+            ]
         }
     }
 

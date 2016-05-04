@@ -33,11 +33,6 @@ ogapi_relation_uri = '{0}/provision/organizations/{1}/entities/relations'.format
     conf.OG_NORTH_API_BASE_URI,
     conf.ORGANIZATION)
 
-headers = {
-    'X-ApiKey': conf.API_KEY,
-    'Content-Type': 'application/json'
-}
-
 
 def get_device(id, serial=None):
     device = {
@@ -147,7 +142,7 @@ def get_relations(device_id, wifi_id, zigbee_id):
 def http_post(entity_type, entity_id, entity_as_json, entity_uri):
     print 'Creating {0} {1}'.format(entity_type, entity_id)
     print entity_as_json
-    r = requests.post(entity_uri, data=entity_as_json, headers=headers)
+    r = requests.post(entity_uri, data=entity_as_json, headers=conf.HEADERS)
     print 'Status code received {}'.format(r.status_code)
     try:
         print json.dumps(r.json(), indent=2)
@@ -183,14 +178,14 @@ def create():
 def read(dev_id, wifi_id=None):
     print 'Reading device {0}'.format(dev_id)
     uri = '{0}/{1}'.format(ogapi_devices_uri, dev_id)
-    r = requests.get(uri, headers=headers)
+    r = requests.get(uri, headers=conf.HEADERS)
     print 'Status code received {}'.format(r.status_code)
     if r.status_code is 200:
         print json.dumps(json.loads(r.text), indent=2)
 
     print 'Reading wi-fi {0}'.format(wifi_id)
     uri = '{0}/{1}'.format(ogapi_wifi_uri, wifi_id)
-    r = requests.get(uri, headers=headers)
+    r = requests.get(uri, headers=conf.HEADERS)
     print 'Status code received {}'.format(r.status_code)
     if r.status_code is 200:
         print json.dumps(json.loads(r.text), indent=2)
@@ -201,7 +196,7 @@ def update(dev_id, serial):
     device_as_json = json.dumps(get_device(dev_id, serial), indent=2)
     print device_as_json
     uri = '{0}/{1}'.format(ogapi_devices_uri, dev_id)
-    r = requests.put(uri, data=device_as_json, headers=headers)
+    r = requests.put(uri, data=device_as_json, headers=conf.HEADERS)
     print 'Status code received {}'.format(r.status_code)
     print r.text
 
@@ -211,13 +206,13 @@ def delete(dev_id, wifi_id=None):
     if wifi_id is not None:
         print 'Deleting wi-fi {0}'.format(wifi_id)
         uri = '{0}/{1}'.format(ogapi_wifi_uri, wifi_id)
-        r = requests.delete(uri, headers=headers)
+        r = requests.delete(uri, headers=conf.HEADERS)
         print 'Status code received {}'.format(r.status_code)
         print r.text
 
     print 'Deleting device {0}'.format(dev_id)
     uri = '{0}/{1}'.format(ogapi_devices_uri, dev_id)
-    r = requests.delete(uri, headers=headers)
+    r = requests.delete(uri, headers=conf.HEADERS)
     print 'Status code received {}'.format(r.status_code)
     print r.text
 

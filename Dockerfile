@@ -3,4 +3,4 @@ RUN pip install Flask
 RUN pip install requests
 ADD . /code
 WORKDIR /code
-CMD python app.py
+CMD python device_emlator_http_server.py

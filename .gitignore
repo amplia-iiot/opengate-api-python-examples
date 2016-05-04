@@ -7,3 +7,4 @@
 opengate_config.py
 opengate_config_*.py
 from-opengate-deployment-element.txt
+my*.sh

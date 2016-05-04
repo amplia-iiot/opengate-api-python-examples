@@ -17,16 +17,11 @@ OPERATION_NAME_UPDATE = 'UPDATE'
 
 ogapi_jobs_uri = '{0}/operation/jobs'.format(conf.OG_NORTH_API_BASE_URI)
 
-headers = {
-    'X-ApiKey': conf.API_KEY,
-    'Content-Type': 'application/json'
-}
-
 
 def http_post(entity_id, entity_as_json, entity_uri):
     print 'Sending job to device {0}'.format(entity_id)
     print entity_as_json
-    r = requests.post(entity_uri, data=entity_as_json, headers=headers)
+    r = requests.post(entity_uri, data=entity_as_json, headers=conf.HEADERS)
     print 'Status code received {}'.format(r.status_code)
     print json.dumps(r.json(), indent=2)
 
@@ -61,7 +56,9 @@ def update(device_id):
                 ],
                 'active': True,
                 'schedule': {'stop': {'delayed': 300000}},
-                'operationParameters': {'timeout': 60000},
+                'operationParameters': {
+                    'timeout': 60000
+                },
                 'target': {
                     'append': {
                         'entities': [device_id]
