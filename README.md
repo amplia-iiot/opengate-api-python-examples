@@ -14,6 +14,7 @@ In order to use these scripts you must:
 
 * [Flask](http://flask.pocoo.org/)
 * [requests](http://docs.python-requests.org/en/latest/)
+* [websocket-client](https://pypi.python.org/pypi/websocket-client)
 
 The recommended way to install the dependencies is using [`pip`](https://pypi.python.org/pypi/pip).
 Here you have the commands to install it.
