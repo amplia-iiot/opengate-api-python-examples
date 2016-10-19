@@ -16,11 +16,11 @@ In order to use these scripts you must:
 * [requests](http://docs.python-requests.org/en/latest/)
 * [websocket-client](https://pypi.python.org/pypi/websocket-client)
 
-The recommended way to install the dependencies is using [`pip`](https://pypi.python.org/pypi/pip).
-Here you have the commands to install it.
+The recommended way to install Python dependencies is using [`pip`](https://pypi.python.org/pypi/pip).
+Here you have the commands to install them.
 
 ```
-pip install request
+pip install requests
 pip install Flask
 pip install websocket-client
 ```
