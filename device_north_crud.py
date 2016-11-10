@@ -7,16 +7,17 @@ Options:
 -r, --read=deviceid
 -u, --update=deviceid
 -d, --delete=deviceid
+-t, --trusted Enable trusted boot
 '''
 
-
 import random
-import opengate_config as conf
+import hashlib
 import requests
 import uuid
 import json
 import sys
 import getopt
+import opengate_config as conf
 
 ogapi_devices_uri = '{0}/provision/organizations/{1}/entities/devices'.format(
     conf.OG_NORTH_API_BASE_URI,
@@ -34,7 +35,8 @@ ogapi_relation_uri = '{0}/provision/organizations/{1}/entities/relations'.format
     conf.ORGANIZATION)
 
 
-def get_device(id, serial=None):
+def get_device(id, trusted_boot=False, serial=None):
+
     device = {
         'device': {
             'id': id,
@@ -52,10 +54,19 @@ def get_device(id, serial=None):
                     'serviceGroup': 'emptyServiceGroup'
                 },
                 # uncomment the following line if you want to reference the device model
-                #'hardware': [conf.MODEL_NAME]
+                # 'hardware': [conf.MODEL_NAME]
             }
         }
     }
+
+    if trusted_boot:
+        hasher = hashlib.sha256()
+        with open(conf.FIRMWARE_FILE_NAME, 'rb') as device_firmware:
+            buf = device_firmware.read()
+            hasher.update(buf)
+
+        trusted_boot_hash = hasher.hexdigest()
+        device['device']['provision']['trustedBoot'] = trusted_boot_hash
 
     if serial is not None:
         serials = [serial]
@@ -143,7 +154,7 @@ def http_post(entity_type, entity_id, entity_as_json, entity_uri):
     print 'Creating {0} {1}'.format(entity_type, entity_id)
     print entity_as_json
     r = requests.post(entity_uri, data=entity_as_json, headers=conf.HEADERS)
-    print 'Status code received {}'.format(r.status_code)
+    print 'Status code received {0}'.format(r.status_code)
     try:
         print json.dumps(r.json(), indent=2)
     except:
@@ -158,9 +169,9 @@ def http_post(entity_type, entity_id, entity_as_json, entity_uri):
         print 'Can\'t create {0} file'.format(entity_type)
 
 
-def create():
+def create(trusted_boot=False):
     device_id = str(uuid.uuid4())
-    device_as_json = json.dumps(get_device(device_id), indent=2)
+    device_as_json = json.dumps(get_device(device_id, trusted_boot), indent=2)
     http_post('device', device_id, device_as_json, ogapi_devices_uri)
 
     wifi_id = str(uuid.uuid4())
@@ -193,7 +204,7 @@ def read(dev_id, wifi_id=None):
 
 def update(dev_id, serial):
     print 'Updating device {0}'.format(dev_id)
-    device_as_json = json.dumps(get_device(dev_id, serial), indent=2)
+    device_as_json = json.dumps(get_device(dev_id, serial=serial), indent=2)
     print device_as_json
     uri = '{0}/{1}'.format(ogapi_devices_uri, dev_id)
     r = requests.put(uri, data=device_as_json, headers=conf.HEADERS)
@@ -244,7 +255,7 @@ def load_ids():
 
 def main():
     try:  # parse command line options
-        opts, args = getopt.getopt(sys.argv[1:], 'hcrud', ['help', 'create', 'read', 'update', 'delete'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hcrudt', ['help', 'create', 'read', 'update', 'delete', 'trusted'])
     except getopt.error, msg:
         print msg
         print 'for help use --help'
@@ -268,6 +279,8 @@ def main():
             update(box_ids[0], a)
         elif o in ('-d', '--delete'):
             delete(box_ids[0], box_ids[1])
+        elif o in ('-t', '--trusted'):
+            create(trusted_boot=True)
         else:
             print __doc__
             sys.exit(0)

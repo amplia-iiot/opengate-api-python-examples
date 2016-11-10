@@ -73,7 +73,7 @@ def create_bundle():
 
 
 def create_deployment_element():
-    deployment_element_file_name = 'deployment-element.txt'
+    deployment_element_file_name = conf.FIRMWARE_FILE_NAME
 
     deployment_element = {
         'deploymentElement': {
@@ -87,7 +87,7 @@ def create_deployment_element():
             'validators': [
                 {
                     'type': 'SHA-256',
-                    'value': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+                    'mode': 'SECURE_BOOT'
                 }
             ]
         }

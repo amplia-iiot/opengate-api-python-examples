@@ -70,8 +70,10 @@ def update(id):
         print 'Sending IoT data {0}'.format(id)
         device_as_json = json.dumps(get_data_points(), indent=2)
         print device_as_json
-        ogapi_devices_uri = '{0}/devices/{1}/collect/iot'.format(conf.OG_SOUTH_API_BASE_URI, id)
-        r = requests.post(ogapi_devices_uri, data=device_as_json, headers=conf.HEADERS)
+        ogapi_devices_uri = '{0}/devices/{1}/collect/iot'\
+            .format(conf.OG_SOUTH_API_BASE_URI, id)
+        r = requests.post(ogapi_devices_uri, data=device_as_json,
+                          headers=conf.HEADERS)
         print 'Status code received {}'.format(r.status_code)
         print r.text
         time.sleep(1)
@@ -79,7 +81,8 @@ def update(id):
 
 def main():
     try:  # parse command line options
-        opts, args = getopt.getopt(sys.argv[1:], 'hi:', ['help', 'identifier='])
+        long_option_list = ['help', 'identifier=']
+        opts, args = getopt.getopt(sys.argv[1:], 'hi:', long_option_list)
     except getopt.error, msg:
         print msg
         print 'for help use --help'

@@ -15,6 +15,7 @@ import getopt
 import time
 import datetime
 import random
+import hashlib
 
 
 def current_milli_time():
@@ -34,14 +35,22 @@ def get_device(id):
     except IOError:
         print 'Can\'t read zigbiee_id file'
 
+    hasher = hashlib.sha256()
+    with open(conf.FIRMWARE_FILE_NAME, 'rb') as device_firmware:
+        buf = device_firmware.read()
+        hasher.update(buf)
+
+    trusted_boot_hash = hasher.hexdigest()
 
     device = {
+        'trustedBoot': trusted_boot_hash,
         'event': {
             'id': '{0}'.format(current_milli_time()),
             'device': {
                 'id': id,
-                'name': 'Virtual Device',
-                'description': 'Virtual Device for Testing',
+                'path': ['pepeFlexy'],
+                'name': 'Demo Device',
+                'description': 'Demo Device',
                 'hardware': {
                     'serialnumber': str(uuid.uuid4()),
                     'manufacturer': {
@@ -131,6 +140,7 @@ def update(id):
     device_as_json = json.dumps(get_device(id), indent=2)
     print device_as_json
     ogapi_devices_uri = '{0}/devices/{1}/collect/dmm'.format(conf.OG_SOUTH_API_BASE_URI, id)
+    print 'Sending DMM event to {0}'.format(ogapi_devices_uri)
     r = requests.post(ogapi_devices_uri, data=device_as_json, headers=conf.HEADERS)
     print 'Status code received {}'.format(r.status_code)
     print r.text
