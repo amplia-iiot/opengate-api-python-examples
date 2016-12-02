@@ -3,7 +3,7 @@
 device_north_crud.py [-options]
 Options:
 -h, --help
--c, --create
+-c, --create parameter: custom device id
 -r, --read=deviceid
 -u, --update=deviceid
 -d, --delete=deviceid
@@ -169,8 +169,9 @@ def http_post(entity_type, entity_id, entity_as_json, entity_uri):
         print 'Can\'t create {0} file'.format(entity_type)
 
 
-def create(trusted_boot=False):
-    device_id = str(uuid.uuid4())
+def create(device_id, trusted_boot=False):
+    if not device_id:
+        device_id = str(uuid.uuid4())
     device_as_json = json.dumps(get_device(device_id, trusted_boot), indent=2)
     http_post('device', device_id, device_as_json, ogapi_devices_uri)
 
@@ -255,7 +256,7 @@ def load_ids():
 
 def main():
     try:  # parse command line options
-        opts, args = getopt.getopt(sys.argv[1:], 'hcrudt', ['help', 'create', 'read', 'update', 'delete', 'trusted'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hc:rudt', ['help', 'create', 'read', 'update', 'delete', 'trusted'])
     except getopt.error, msg:
         print msg
         print 'for help use --help'
@@ -272,7 +273,7 @@ def main():
             print __doc__
             sys.exit(0)
         elif o in ('-c', '--create'):
-            create()
+            create(a)
         elif o in ('-r', '--read'):
             read(box_ids[0], box_ids[1])
         elif o in ('-u', '--update'):
