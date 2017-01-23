@@ -62,7 +62,7 @@ if __name__ == "__main__":
             print 'Can\'t read device_id file'
 
     websocket.enableTrace(True)
-    opengate_websocket_uri = '{0}/{1}?xHyKZ={2}'.format(conf.OG_SOUTH_WEBSOCKET_BASE_URI, device_id, conf.API_KEY)
+    opengate_websocket_uri = '{0}/{1}?X-ApiKey={2}'.format(conf.OG_SOUTH_WEBSOCKET_BASE_URI, device_id, conf.API_KEY)
     print 'Opening websocket on {0}'.format(opengate_websocket_uri)
     ws = websocket.WebSocketApp(opengate_websocket_uri, on_message=on_message, on_error=on_error, on_close=on_close)
     ws.on_open = on_open
