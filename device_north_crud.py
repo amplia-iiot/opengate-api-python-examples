@@ -3,11 +3,12 @@
 device_north_crud.py [-options]
 Options:
 -h, --help
--c, --create parameter: custom device id
+-c, --create
 -r, --read=deviceid
 -u, --update=deviceid
 -d, --delete=deviceid
 -t, --trusted Enable trusted boot
+-i, --deviceid=deviceid Create with custom device id
 '''
 
 import random
@@ -156,9 +157,13 @@ def http_post(entity_type, entity_id, entity_as_json, entity_uri):
     r = requests.post(entity_uri, data=entity_as_json, headers=conf.HEADERS)
     print 'Status code received {0}'.format(r.status_code)
     try:
+        # Try to print JSON response
         print json.dumps(r.json(), indent=2)
     except:
-        pass
+        pass # Do nothing if JSON can't be dumped
+
+    if r.status_code != 201:
+        raise AssertionError('Assertion error, status code %s is different to 201' % r.status_code)
 
     # A file with the entity id is create for further DMM & IoT operations
     # See device_south_dmm.py & device_south_iot.py
@@ -169,23 +174,25 @@ def http_post(entity_type, entity_id, entity_as_json, entity_uri):
         print 'Can\'t create {0} file'.format(entity_type)
 
 
-def create(device_id, trusted_boot=False):
-    if not device_id:
-        device_id = str(uuid.uuid4())
-    device_as_json = json.dumps(get_device(device_id, trusted_boot), indent=2)
-    http_post('device', device_id, device_as_json, ogapi_devices_uri)
+def create(device_id=None, trusted_boot=False):
+    try:
+        if device_id is None:
+            device_id = str(uuid.uuid4())
+        device_as_json = json.dumps(get_device(device_id, trusted_boot), indent=2)
+        http_post('device', device_id, device_as_json, ogapi_devices_uri)
 
-    wifi_id = str(uuid.uuid4())
-    wifi_as_json = json.dumps(get_wifi_interface(wifi_id), indent=2)
-    http_post('wifi', wifi_id, wifi_as_json, ogapi_wifi_uri)
+        wifi_id = str(uuid.uuid4())
+        wifi_as_json = json.dumps(get_wifi_interface(wifi_id), indent=2)
+        http_post('wifi', wifi_id, wifi_as_json, ogapi_wifi_uri)
 
-    zigbee_id = str(uuid.uuid4())
-    zigbee_as_json = json.dumps(get_zigbee_communication_module(zigbee_id), indent=2)
-    http_post('zigbee', zigbee_id, zigbee_as_json, ogapi_comm_modules_uri)
+        zigbee_id = str(uuid.uuid4())
+        zigbee_as_json = json.dumps(get_zigbee_communication_module(zigbee_id), indent=2)
+        http_post('zigbee', zigbee_id, zigbee_as_json, ogapi_comm_modules_uri)
 
-    relation_as_json = json.dumps(get_relations(device_id, wifi_id, zigbee_id), indent=2)
-    http_post('relation', device_id, relation_as_json, '{0}?action=CREATE'.format(ogapi_relation_uri))
-
+        relation_as_json = json.dumps(get_relations(device_id, wifi_id, zigbee_id), indent=2)
+        http_post('relation', device_id, relation_as_json, '{0}?action=CREATE'.format(ogapi_relation_uri))
+    except Exception as e:
+        print e
 
 def read(dev_id, wifi_id=None):
     print 'Reading device {0}'.format(dev_id)
@@ -256,7 +263,7 @@ def load_ids():
 
 def main():
     try:  # parse command line options
-        opts, args = getopt.getopt(sys.argv[1:], 'hc:rudt', ['help', 'create', 'read', 'update', 'delete', 'trusted'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hcrudti:', ['help', 'create', 'read', 'update', 'delete', 'trusted', 'deviceid'])
     except getopt.error, msg:
         print msg
         print 'for help use --help'
@@ -273,7 +280,7 @@ def main():
             print __doc__
             sys.exit(0)
         elif o in ('-c', '--create'):
-            create(a)
+            create()
         elif o in ('-r', '--read'):
             read(box_ids[0], box_ids[1])
         elif o in ('-u', '--update'):
@@ -282,6 +289,8 @@ def main():
             delete(box_ids[0], box_ids[1])
         elif o in ('-t', '--trusted'):
             create(trusted_boot=True)
+        elif o in ('-i', '--deviceid'):
+            create(a)
         else:
             print __doc__
             sys.exit(0)
