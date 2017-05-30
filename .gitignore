@@ -10,3 +10,4 @@ from-opengate-deployment-element.txt
 my*.sh
 *pants*
 
+.vscode

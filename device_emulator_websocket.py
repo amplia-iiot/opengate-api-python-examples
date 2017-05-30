@@ -3,7 +3,7 @@
 import json
 import websocket
 import opengate_config as conf
-from device_emulator_common import reboot, update, operation_step_response
+from device_emulator_common import reboot, update, field_diagnostic, configreport, operation_step_response
 
 
 def on_message(ws, message):
@@ -29,6 +29,10 @@ def on_message(ws, message):
         response_as_json = json.dumps(reboot(content), indent=2)
     elif operation_name == 'UPDATE':
         response_as_json = json.dumps(update(content, device_id, publish_operation_step_response), indent=2)
+    elif operation_name == 'FIELD_DIAGNOSTIC':
+        response_as_json = json.dumps(field_diagnostic(content), indent=2)
+    elif operation_name == 'CONFIGREPORT':
+        response_as_json = json.dumps(configreport(content), indent=2)
 
     print response_as_json
     # Message reception ACK
@@ -49,7 +53,7 @@ def on_open(ws):
 
 
 if __name__ == "__main__":
-    print 'Test'
+    print 'OpenGate WebSocket Client'
 
     device_id = None
     if conf.DEFAULT_DEVICE_ID is not None:
@@ -60,6 +64,10 @@ if __name__ == "__main__":
             device_id = device_id_file.read().strip()
         except IOError:
             print 'Can\'t read device_id file'
+
+    if device_id is None:
+        print 'No device id available'
+        sys.exit(2)
 
     websocket.enableTrace(True)
     opengate_websocket_uri = '{0}/{1}?X-ApiKey={2}'.format(conf.OG_SOUTH_WEBSOCKET_BASE_URI, device_id, conf.API_KEY)

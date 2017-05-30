@@ -52,7 +52,7 @@ def get_device(id, trusted_boot=False, serial=None):
                     'organization': conf.ORGANIZATION,
                     'channel': conf.CHANNEL,
                     'administrativeState': 'ACTIVE',
-                    'serviceGroup': 'emptyServiceGroup'
+                    'serviceGroup': conf.SERVICE_GROUP
                 },
                 # uncomment the following line if you want to reference the device model
                 # 'hardware': [conf.MODEL_NAME]
@@ -90,7 +90,7 @@ def get_wifi_interface(wifi_id):
                     'organization': conf.ORGANIZATION,
                     'channel': conf.CHANNEL,
                     'administrativeState': 'ACTIVE',
-                    'serviceGroup': 'emptyServiceGroup'
+                    'serviceGroup': conf.SERVICE_GROUP
                 },
                 'address': [
                     {
@@ -120,7 +120,7 @@ def get_zigbee_communication_module(zigbee_id):
                     'organization': conf.ORGANIZATION,
                     'channel': conf.CHANNEL,
                     'administrativeState': 'ACTIVE',
-                    'serviceGroup': 'emptyServiceGroup'
+                    'serviceGroup': conf.SERVICE_GROUP
                 },
                 'mac': [
                     '52:54:00:%02x:%02x:%02x' % (

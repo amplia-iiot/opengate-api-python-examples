@@ -32,28 +32,24 @@ def get_data_points():
         'datastreams': [
             {
                 'id': 'health.glucose.concentration',
-                'feed': 'health',
                 'datapoints': [
                     {'at': current_milli_time(), 'value': add_some_noise(201)}
                 ]
             },
             {
                 'id': 'health.bodycomposition.weight',
-                'feed': 'health',
                 'datapoints': [
                     {'at': current_milli_time(), 'value': add_some_noise(71.5)}
                 ]
             },
             {
                 'id': 'health.bloodpresure.pulserate',
-                'feed': 'health',
                 'datapoints': [
                     {'at': current_milli_time(), 'value': add_some_noise(76)}
                 ]
             },
             {
                 'id': 'health.bloodpresure.systolic',
-                'feed': 'health',
                 'datapoints': [
                     {'at': current_milli_time(), 'value': add_some_noise(69)}
                 ]
