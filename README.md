@@ -63,3 +63,10 @@ The script `device_south_iot_http.py` sends a burst of IoT data throught the HTT
 
 ### MQTT
 The script `device_south_iot_mqtt.py` connects to the MQTT OpenGate connector and sends a burst of IoT data.
+
+## Emulators
+The following scripts emulate the reception and response of operations coming from OpenGate:
+
+* `device_emulator_http_server.py`
+* `device_emulator_mqtt_server.py`
+* `device_emulator_websocket_server.py`
