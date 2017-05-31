@@ -1,4 +1,0 @@
-agent:
-  build: ./
-  ports:
-    - "1123:1123"
