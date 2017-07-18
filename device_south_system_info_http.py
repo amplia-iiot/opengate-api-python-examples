@@ -7,6 +7,7 @@ Usage: device_south_system_info_http.py [OPTIONS]...
 Option
  -h\t--help
  -i\t--identifier=deviceid
+ -n\t--number-of-datastreams=max_datastreams\tMax number of datastreams to send.
 '''
 
 import sys
@@ -15,6 +16,7 @@ import psutil
 import json
 import requests
 import time
+import random
 
 import opengate_config as conf
 import device_south_iot_common as common
@@ -142,9 +144,13 @@ def get_system_data_points(device_id):
         ]
     }
 
-def update(device_id, dry_run):
+def update(device_id, dry_run, max_datastreams):
     '''Generates message with data points and sends it'''
-    device_as_json = json.dumps(get_system_data_points(device_id), indent=2)
+    message = get_system_data_points(device_id)
+    if max_datastreams is not None:
+        while len(message['datastreams']) > max_datastreams:
+            del message['datastreams'][random.randint(0, len(message['datastreams']) - 1)]
+    device_as_json = json.dumps(message, indent=2)
     print device_as_json
     if not dry_run:
         print 'Sending packet as {0}'.format(device_id)
@@ -157,7 +163,7 @@ def update(device_id, dry_run):
 
 def main():
     try: # parse command line options
-        opts, args = getopt.getopt(sys.argv[1:], 'hi:', ['help', 'identifier=', 'dry-run'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hi:n:', ['help', 'identifier=', 'number-of-datastreams=', 'dry-run'])
     except getopt.error, msg:
         print msg
         print 'For help use --help'
@@ -165,6 +171,7 @@ def main():
 
     device_id = None
     dry_run = False
+    max_datastreams = None
     if conf.DEFAULT_DEVICE_ID is not None:
         device_id = conf.DEFAULT_DEVICE_ID
     else:
@@ -181,6 +188,9 @@ def main():
         elif option in ('-i', '--identifier'):
             device_id = argument
             print 'Using device id: ' + device_id
+        elif option in ('-n', '--number-of-datastreams'):
+            max_datastreams = int(argument)
+            print 'Sending a maximum of {0} datapoints'.format(max_datastreams)
         elif option in ('--dry-run'):
             dry_run = True
             print 'Executing without sending message'
@@ -191,7 +201,7 @@ def main():
     if device_id is None:
         print 'Please, provide a device identifier'
     else:
-        update(device_id, dry_run)
+        update(device_id, dry_run, max_datastreams)
 
 if __name__ == '__main__':
     main()
