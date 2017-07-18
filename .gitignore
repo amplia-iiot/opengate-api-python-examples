@@ -11,3 +11,4 @@ my*.sh
 *pants*
 
 .vscode
+.venv
