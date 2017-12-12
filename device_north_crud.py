@@ -20,11 +20,11 @@ import sys
 import getopt
 import opengate_config as conf
 
-ogapi_devices_uri = '{0}/provision/organizations/{1}/entities/devices'.format(
+ogapi_devices_uri = '{0}/provision/organizations/{1}/devices'.format(
     conf.OG_NORTH_API_BASE_URI,
     conf.ORGANIZATION)
 
-ogapi_wifi_uri = '{0}/provision/organizations/{1}/entities/subscriptions'.format(
+ogapi_wifi_uri = '{0}/provision/organizations/{1}/subscriptions'.format(
     conf.OG_NORTH_API_BASE_URI,
     conf.ORGANIZATION)
 ogapi_comm_modules_uri = '{0}/provision/organizations/{1}/entities/communicationsModules'.format(
@@ -39,23 +39,28 @@ ogapi_relation_uri = '{0}/provision/organizations/{1}/entities/relations'.format
 def get_device(id, trusted_boot=False, serial=None):
 
     device = {
-        'device': {
-            'id': id,
-            'provision': {
-                'customId': [id],
-                'template': 'default',
-                'type': 'gateway',
-                'specificType': ['CONCENTRATOR'],
-                'name': [id],
-                'description': ['Device for testing purposes'],
-                'admin': {
-                    'organization': conf.ORGANIZATION,
-                    'channel': conf.CHANNEL,
-                    'administrativeState': 'ACTIVE',
-                    'serviceGroup': conf.SERVICE_GROUP
-                },
-                # uncomment the following line if you want to reference the device model
-                # 'hardware': [conf.MODEL_NAME]
+        'provision': {
+            'administration': {
+		'channel': {
+	            '_current': { 'value': conf.CHANNEL }
+       		 },
+          	'serviceGroup': {
+                    '_current': { 'value': conf.SERVICE_GROUP }
+         	 }
+	    },
+            'device': {
+		'identifier': {
+	            '_current': { 'value': id }
+       		   },
+          	'name': {
+            	    '_current': { 'value': id }
+	          },
+          	'specificType': {
+	            '_current': { 'value': 'CONCENTRATOR' }
+          	},
+          	'description': {
+	            '_current': { 'value': 'Device for testing purposes' }
+          	}
             }
         }
     }

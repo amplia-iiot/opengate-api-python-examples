@@ -6,9 +6,9 @@ NORTH_PORT = 80
 SOUTH_PORT = 80
 SOUTH_WEBSOCKET_PORT = SOUTH_PORT
 SOUTH_MQTT_PORT = 1883
-OG_NORTH_API_BASE_URI = 'http://{0}:{1}/north/v70'.format(
+OG_NORTH_API_BASE_URI = 'http://{0}:{1}/north/v80'.format(
     OPENGATE_HOST, NORTH_PORT)
-OG_SOUTH_API_BASE_URI = 'http://{0}:{1}/south/v70'.format(
+OG_SOUTH_API_BASE_URI = 'http://{0}:{1}/south/v80'.format(
     OPENGATE_HOST, SOUTH_PORT)
 OG_SOUTH_WEBSOCKET_BASE_URI = 'ws://{0}:{1}/south/v70/sessions'.format(
     OPENGATE_HOST, SOUTH_WEBSOCKET_PORT)
