@@ -2,6 +2,7 @@
 import getopt
 from ipaddress import ip_address
 import json
+import socket
 import sys
 import time
 
@@ -153,7 +154,7 @@ def main():  # pragma: no cover
             print 'Can\'t read device_id file neither from .device_id file nor opengate_config.py'
             sys.exit(2)
 
-    path = "v70/devices/"
+    path = "v80/devices/"
     payload = None
     command = coap.POST
     if event_type == "DMM":
@@ -191,7 +192,12 @@ def requestResource(protocol, command, server_ip, server_port, api_key, path, pa
     # version option (reserved for future requirements)
 #    request.opt.addOption(coap.StringOption(number=2504, value="1.0"))
     print 'Remote server in ' + server_ip + ':' + str(server_port)
-    request.remote = (ip_address(server_ip), server_port)
+    ipAddress = None
+    try:
+        ipAddress = ip_address(server_ip)
+    except Exception:
+        ipAddress = ip_address(socket.gethostbyname(server_ip))
+    request.remote = (ipAddress, server_port)
     if payload != None:
         request.payload = str(payload)
         request.opt.content_format = coap.media_types_rev['application/json']
