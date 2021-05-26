@@ -4,10 +4,10 @@ device_north_crud.py [-options]
 Options:
 -h, --help
 -c, --create
--r, --read=deviceid
--u, --update=deviceid
--d, --delete=deviceid
--t, --trusted Enable trusted boot
+-r, --read
+-u, --update
+-d, --delete
+-t, --trusted Create with trusted boot enabled
 -i, --deviceid=deviceid Create with custom device id
 '''
 
