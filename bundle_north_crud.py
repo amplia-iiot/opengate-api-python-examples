@@ -37,7 +37,7 @@ def create_bundle():
     from configuration. It performs a searching on the hardaware
     catalog API
     '''
-    print 'Getting model ID, searching on hardware catalog API...'
+    print('Getting model ID, searching on hardware catalog API...')
     search_filter = {
         'filter': {
             'eq': {
@@ -46,7 +46,7 @@ def create_bundle():
         }
     }
     search_filter_as_json = json.dumps(search_filter, indent=2)
-    print search_filter_as_json
+    print(search_filter_as_json)
 
     response = requests.post(ogapi_search_catalog_hardware,
                              data=search_filter_as_json, headers=headers)
@@ -54,7 +54,7 @@ def create_bundle():
     if response.status_code == 200:
         search_response = response.json()
         search_response_as_json = json.dumps(search_response, indent=2)
-        print search_response_as_json
+        print(search_response_as_json)
 
         hardware_id = None
         # It's supposed that there will be only one manufacturer for
@@ -63,7 +63,7 @@ def create_bundle():
             if model['name'] == conf.MODEL_NAME:
                 hardware_id = model['id']
 
-        print 'Hardware ID got {}'.format(hardware_id)
+        print('Hardware ID got {}'.format(hardware_id))
 
         bundle = {
             'bundle': {
@@ -79,18 +79,18 @@ def create_bundle():
         }
 
         bundle_as_json = json.dumps(bundle, indent=2)
-        print 'Creating bundle on {0}'.format(ogapi_bundles_uri)
-        print bundle_as_json
+        print('Creating bundle on {0}'.format(ogapi_bundles_uri))
+        print(bundle_as_json)
         response = requests.post(
             ogapi_bundles_uri, data=bundle_as_json, headers=headers)
-        print 'Status code received {}'.format(response.status_code)
-        print response.content
+        print('Status code received {}'.format(response.status_code))
+        print(response.content)
         if response.status_code == 201:
             bundle_location = response.headers['Location']
-            print 'Bundle location {0}'.format(bundle_location)
+            print('Bundle location {0}'.format(bundle_location))
 
     else:
-        print 'Device not found for model {0}'.format(conf.MODEL_NAME)
+        print('Device not found for model {0}'.format(conf.MODEL_NAME))
 
 
 def create_deployment_element():
@@ -132,13 +132,13 @@ def create_deployment_element():
             {'Expires': '0'}),
     }
 
-    print 'Creating deployment element on {0}'.format(ogapi_deployment_elements_uri)
-    print deployment_element_as_json
+    print('Creating deployment element on {0}'.format(ogapi_deployment_elements_uri))
+    print(deployment_element_as_json)
 
     response = requests.post(ogapi_deployment_elements_uri,
                              files=files, headers={'X-ApiKey': conf.API_KEY})
-    print 'Status code received {}'.format(response.status_code)
-    print response.content
+    print('Status code received {}'.format(response.status_code))
+    print(response.content)
 
 
 def bundle_activation(state):
@@ -150,12 +150,12 @@ def bundle_activation(state):
         }
     }
     bundle_as_json = json.dumps(bundle, indent=2)
-    print 'Setting bundle activation to {0} on {1}'.format(state, ogapi_bundle_uri)
-    print bundle_as_json
+    print('Setting bundle activation to {0} on {1}'.format(state, ogapi_bundle_uri))
+    print(bundle_as_json)
     response = requests.put(
         ogapi_bundle_uri, data=bundle_as_json, headers=headers)
-    print 'Status code received {}'.format(response.status_code)
-    print response.content
+    print('Status code received {}'.format(response.status_code))
+    print(response.content)
 
 
 def create():
@@ -177,10 +177,10 @@ def delete():
 
     bundle_activation(False)
 
-    print 'Deleting bundle {0}'.format(ogapi_bundle_uri)
+    print('Deleting bundle {0}'.format(ogapi_bundle_uri))
     response = requests.delete(ogapi_bundle_uri, headers=headers)
-    print 'Status code received {}'.format(response.status_code)
-    print response.content
+    print('Status code received {}'.format(response.status_code))
+    print(response.content)
 
 
 def main():
@@ -189,18 +189,18 @@ def main():
     try:  # parse command line options
         opts, args = getopt.getopt(sys.argv[1:], 'hcad', [
                                    'help', 'create', 'activate', 'deactivate'])
-    except getopt.error, msg:
-        print msg
-        print 'for help use --help'
+    except getopt.error as msg:
+        print(msg)
+        print('for help use --help')
         sys.exit(2)
 
-    if len(opts) is 0:
-        print __doc__
+    if len(opts) == 0:
+        print(__doc__)
         sys.exit(0)
 
     for option, argument in opts:  # process options
         if option in ('-h', '--help'):
-            print __doc__
+            print(__doc__)
             sys.exit(0)
         elif option in ('-c', '--create'):
             create()
@@ -211,7 +211,7 @@ def main():
         elif option in ('-t', '--deactivate'):
             bundle_activation(False)
         else:
-            print __doc__
+            print(__doc__)
             sys.exit(0)
 
 

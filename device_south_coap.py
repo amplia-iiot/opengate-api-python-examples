@@ -87,11 +87,11 @@ def getAlarmPayload(device_id):
 
 
 def usage():  # pragma: no cover
-    print "Options (mandatory):"
-    print "\t-e, --event=\t\tEvent type: DMM|IOT|ALARM"
-    print ""
-    print "Example:"
-    print "\tpython device_south_coap.py -e DMM"
+    print("Options (mandatory):")
+    print("\t-e, --event=\t\tEvent type: DMM|IOT|ALARM")
+    print("")
+    print("Example:")
+    print("\tpython device_south_coap.py -e DMM")
 
 
 def main():  # pragma: no cover
@@ -106,8 +106,8 @@ def main():  # pragma: no cover
     try:
         opts, args = getopt.getopt(sys.argv[1:], "he:", ["help", "event="])
     except getopt.GetoptError as err:
-        # print help information and exit:
-        print str(err)  # will print something like "option -a not recognized"
+        # print(help information and exit:)
+        print(str(err)  # will print something like "option -a not recognized")
         usage()
         sys.exit(2)
     for o, a in opts:
@@ -121,7 +121,7 @@ def main():  # pragma: no cover
             sys.exit(2)
 
     if event_type is None:
-        print "Event type must be specified"
+        print("Event type must be specified")
         usage()
         sys.exit(2)
 
@@ -129,18 +129,18 @@ def main():  # pragma: no cover
         server_ip = conf.COAP_SERVER_IP
     else:
         server_ip = "127.0.0.1"
-        print 'Can\'t read COAP_SERVER_IP from opengate_config.py using default value ' + server_ip
+        print('Can\'t read COAP_SERVER_IP from opengate_config.py using default value ' + server_ip)
 
     if conf.COAP_SERVER_PORT is not None:
         server_port = conf.COAP_SERVER_PORT
     else:
         server_port = 56830
-        print 'Can\'t read COAP_SERVER_IP from opengate_config.py using default value ' + str(server_port)
+        print('Can\'t read COAP_SERVER_IP from opengate_config.py using default value ' + str(server_port))
 
     if conf.API_KEY is not None:
         api_key = conf.API_KEY
     else:
-        print 'Can\'t read API_KEY from opengate_config.py'
+        print('Can\'t read API_KEY from opengate_config.py')
         sys.exit(2)
 
     if conf.DEFAULT_DEVICE_ID is not None:
@@ -150,7 +150,7 @@ def main():  # pragma: no cover
             DEVICE_ID_FILE = open('.device_id', 'r')
             device_id = DEVICE_ID_FILE.read().strip()
         except IOError:
-            print 'Can\'t read device_id file neither from .device_id file nor opengate_config.py'
+            print('Can\'t read device_id file neither from .device_id file nor opengate_config.py')
             sys.exit(2)
 
     path = "v70/devices/"
@@ -169,7 +169,7 @@ def main():  # pragma: no cover
         path = path + "test"
         command = coap.GET
     else:
-        print "Event type " + event_type + " not recognized"
+        print("Event type " + event_type + " not recognized")
         usage()
         sys.exit(2)
 
@@ -190,26 +190,26 @@ def requestResource(protocol, command, server_ip, server_port, api_key, path, pa
     request.opt.addOption(coap.StringOption(number=2503, value=device_id))
     # version option (reserved for future requirements)
 #    request.opt.addOption(coap.StringOption(number=2504, value="1.0"))
-    print 'Remote server in ' + server_ip + ':' + str(server_port)
+    print('Remote server in ' + server_ip + ':' + str(server_port))
     request.remote = (ip_address(server_ip), server_port)
     if payload != None:
         request.payload = str(payload)
         request.opt.content_format = coap.media_types_rev['application/json']
-    print "About to send payload: " + request.payload + " of type " + str(type(request.payload))
+    print("About to send payload: " + request.payload + " of type " + str(type(request.payload)))
     d = protocol.request(request, observeCallback=printLaterResponse)
     d.addCallback(printResponse)
     d.addErrback(noResponse)
 
 def printResponse(response):
-    print 'First result: ' + response.payload
+    print('First result: ' + response.payload)
     reactor.stop()
 
 def printLaterResponse(response):
-    print 'Observe result: ' + response.payload
+    print('Observe result: ' + response.payload)
 
 def noResponse(failure):
-    print 'Failed to fetch resource:'
-    print failure
+    print('Failed to fetch resource:')
+    print(failure)
     reactor.stop()
 
 if __name__ == '__main__':  # pragma: no cover

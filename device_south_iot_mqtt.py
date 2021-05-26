@@ -24,28 +24,28 @@ DEVICE_ID = None
 
 def signal_handler(signal, frame):
     '''Manage Ctrl+C'''
-    print '\nBye'
+    print('\nBye')
     sys.exit(0)
 
 
 def on_connect(caller_mqtt_client, userdata, flags, result_code):
     '''`on_connect` callback implementation'''
-    print 'OpenGate MQTT client Connected with result code ' + str(result_code)
+    print('OpenGate MQTT client Connected with result code ' + str(result_code))
 
-    print 'Sending IoT data from device {0} to topid {1}'.format(DEVICE_ID, ODM_PUBLISH_IOT_TOPIC)
+    print('Sending IoT data from device {0} to topid {1}'.format(DEVICE_ID, ODM_PUBLISH_IOT_TOPIC))
     for request in range(5):
         payload = json.dumps(
             device_south_iot_common.get_data_points(DEVICE_ID), indent=2)
-        print 'Sending datastreams {0}'.format(request)
+        print('Sending datastreams {0}'.format(request))
         caller_mqtt_client.publish(ODM_PUBLISH_IOT_TOPIC.format(
             DEVICE_ID), payload, qos=1)
-        print payload
+        print(payload)
         time.sleep(5)
 
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
-    print 'OpenGate MQTT client test'
+    print('OpenGate MQTT client test')
 
     if conf.DEFAULT_DEVICE_ID is not None:
         DEVICE_ID = conf.DEFAULT_DEVICE_ID
@@ -54,15 +54,15 @@ if __name__ == '__main__':
             DEVICE_ID_FILE = open('.device_id', 'r')
             DEVICE_ID = DEVICE_ID_FILE.read().strip()
         except IOError:
-            print 'Can\'t read device_id file'
+            print('Can\'t read device_id file')
 
-    print 'Device ID got {0}'.format(DEVICE_ID)
+    print('Device ID got {0}'.format(DEVICE_ID))
 
     MQTT_CLIENT = mqtt.Client(client_id=DEVICE_ID)
     MQTT_CLIENT.username_pw_set(DEVICE_ID, conf.API_KEY)
     MQTT_CLIENT.on_connect = on_connect
 
-    print 'Connect to {}:{}'.format(conf.OPENGATE_HOST, conf.SOUTH_MQTT_PORT)
+    print('Connect to {}:{}'.format(conf.OPENGATE_HOST, conf.SOUTH_MQTT_PORT))
     MQTT_CLIENT.connect(conf.OPENGATE_HOST, conf.SOUTH_MQTT_PORT, 60)
     # Blocking call that processes network traffic, dispatches callbacks and handles reconnecting.
     # Other loop*() functions are available that give a threaded interface and a manual interface.

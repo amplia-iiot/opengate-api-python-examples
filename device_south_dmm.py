@@ -33,7 +33,7 @@ def get_device(id):
         zigbee_id_file = open('.zigbee_id', 'r')
         zigbee_id = zigbee_id_file.read().strip()
     except IOError:
-        print 'Can\'t read zigbiee_id file'
+        print('Can\'t read zigbiee_id file')
 
     hasher = hashlib.sha256()
     with open(conf.FIRMWARE_FILE_NAME, 'rb') as device_firmware:
@@ -136,22 +136,22 @@ def get_device(id):
 
 
 def update(id):
-    print 'Updating device {0}'.format(id)
+    print('Updating device {0}'.format(id))
     device_as_json = json.dumps(get_device(id), indent=2)
-    print device_as_json
+    print(device_as_json)
     ogapi_devices_uri = '{0}/devices/{1}/collect/dmm'.format(conf.OG_SOUTH_API_BASE_URI, id)
-    print 'Sending DMM event to {0}'.format(ogapi_devices_uri)
+    print('Sending DMM event to {0}'.format(ogapi_devices_uri))
     r = requests.post(ogapi_devices_uri, data=device_as_json, headers=conf.HEADERS)
-    print 'Status code received {}'.format(r.status_code)
-    print r.text
+    print('Status code received {}'.format(r.status_code))
+    print(r.text)
 
 
 def main():
     try:  # parse command line options
         opts, args = getopt.getopt(sys.argv[1:], 'hi:', ['help', 'identifier='])
-    except getopt.error, msg:
-        print msg
-        print 'for help use --help'
+    except getopt.error as msg:
+        print(msg)
+        print('for help use --help')
         sys.exit(2)
 
     device_id = None
@@ -162,20 +162,20 @@ def main():
             device_id_file = open('.device_id', 'r')
             device_id = device_id_file.read().strip()
         except IOError:
-            print 'Can\'t read device_id file'
+            print('Can\'t read device_id file')
 
     for o, a in opts:  # process options
         if o in ('-h', '--help'):
-            print __doc__
+            print(__doc__)
             sys.exit(0)
         elif o in ('-i', '--identifier'):
             device_id = a
         else:
-            print __doc__
+            print(__doc__)
             sys.exit(0)
 
     if device_id is None:
-        print 'Please, provide a device identifier'
+        print('Please, provide a device identifier')
     else:
         update(device_id)
 

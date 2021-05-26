@@ -11,19 +11,19 @@ def on_message(ws, message):
     def publish_operation_step_response(content, device_id, name, result, close_operation):
         step_response = operation_step_response(content, name, result, close_operation)
         step_response_as_json = json.dumps(step_response, indent=2)
-        print 'Publishing {0} step status {1}...'.format(name, result)
-        print step_response_as_json
+        print('Publishing {0} step status {1}...'.format(name, result))
+        print(step_response_as_json)
         ws.send(step_response_as_json)
-        print '...done'
+        print('...done')
 
     content = json.loads(message)
-    print '===================================='
-    print 'Request received with for device {0} with the following content'.format(device_id)
-    print json.dumps(content, indent=2)
+    print('====================================')
+    print('Request received with for device {0} with the following content'.format(device_id))
+    print(json.dumps(content, indent=2))
     operation_name = content['operation']['request']['name']
-    print 'Operation name got: {0}'.format(operation_name)
+    print('Operation name got: {0}'.format(operation_name))
 
-    print 'Response:'
+    print('Response:')
     response_as_json = ''
     if operation_name == 'REBOOT_EQUIPMENT':
         response_as_json = json.dumps(reboot(content), indent=2)
@@ -34,26 +34,26 @@ def on_message(ws, message):
     elif operation_name == 'CONFIGREPORT':
         response_as_json = json.dumps(configreport(content), indent=2)
 
-    print response_as_json
+    print(response_as_json)
     # Message reception ACK
     ws.send(response_as_json)
 
 
 def on_error(ws, error):
-    print 'WebSocket error'
-    print error
+    print('WebSocket error')
+    print(error)
 
 
 def on_close(ws):
-    print 'WebSocket closed'
+    print('WebSocket closed')
 
 
 def on_open(ws):
-    print 'WebSocket opened'
+    print('WebSocket opened')
 
 
 if __name__ == "__main__":
-    print 'OpenGate WebSocket Client'
+    print('OpenGate WebSocket Client')
 
     device_id = None
     if conf.DEFAULT_DEVICE_ID is not None:
@@ -63,15 +63,15 @@ if __name__ == "__main__":
             device_id_file = open('.device_id', 'r')
             device_id = device_id_file.read().strip()
         except IOError:
-            print 'Can\'t read device_id file'
+            print('Can\'t read device_id file')
 
     if device_id is None:
-        print 'No device id available'
+        print('No device id available')
         sys.exit(2)
 
     websocket.enableTrace(True)
     opengate_websocket_uri = '{0}/{1}?X-ApiKey={2}'.format(conf.OG_SOUTH_WEBSOCKET_BASE_URI, device_id, conf.API_KEY)
-    print 'Opening websocket on {0}'.format(opengate_websocket_uri)
+    print('Opening websocket on {0}'.format(opengate_websocket_uri))
     ws = websocket.WebSocketApp(opengate_websocket_uri, on_message=on_message, on_error=on_error, on_close=on_close)
     ws.on_open = on_open
 
