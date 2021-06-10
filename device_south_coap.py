@@ -18,7 +18,7 @@ __author__ = 'Edu Lahe'
 
 
 def current_milli_time():
-    return long(round(time.time()))
+    return int(round(time.time()))
 
 
 def getDmmPayload(device_id):

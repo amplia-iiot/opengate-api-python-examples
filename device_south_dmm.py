@@ -19,7 +19,7 @@ import hashlib
 
 
 def current_milli_time():
-    return long(round(time.time()))
+    return int(round(time.time()))
 
 
 def add_some_noise(randomize_this):
