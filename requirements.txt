@@ -19,7 +19,7 @@ psutil == 5.2.2
 # device_south_dmm.py: 10
 # device_south_iot_http.py: 15
 # device_south_system_info_http.py: 17
-requests == 1.2.3
+requests == 2.20.0
 
 # device_emulator_mqtt.py: 9
 # device_south_iot_mqtt.py: 12
