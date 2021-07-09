@@ -2,7 +2,7 @@
 # https://github.com/Damnever/pigar
 
 # device_emulator_http_server.py: 7,8
-flask == 0.12.2
+flask == 1.0
 
 # device_emulator_mqtt.py: 9
 # device_south_iot_mqtt.py: 12
