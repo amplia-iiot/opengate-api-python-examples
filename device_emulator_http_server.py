@@ -20,22 +20,22 @@ def publish_operation_step_response(content, device_id, name, result, close_oper
 
     step_response_as_json = json.dumps(step_response, indent=2)
 
-    print 'Publishing {0} step status {1} to {2}...'.format(name, result, ogapi_operation_response_uri)
-    print step_response_as_json
+    print('Publishing {0} step status {1} to {2}...'.format(name, result, ogapi_operation_response_uri))
+    print(step_response_as_json)
     r = requests.post(ogapi_operation_response_uri, data=step_response_as_json, headers=conf.HEADERS, stream=True)
-    print '...done'
+    print('...done')
 
 
 @app.route('/v70/devices/<device_id>/operation/requests', methods=['POST'])
 def opengate_operations_handler(device_id):
     content = request.get_json(force=True)
-    print '===================================='
-    print 'Request received with for device {0} with the following content'.format(device_id)
-    print json.dumps(content, indent=2)
+    print('====================================')
+    print('Request received with for device {0} with the following content'.format(device_id))
+    print(json.dumps(content, indent=2))
     operation_name = content['operation']['request']['name']
-    print 'Operation name got: {0}'.format(operation_name)
+    print('Operation name got: {0}'.format(operation_name))
 
-    print 'Response:'
+    print('Response:')
     response_as_json = ''
     response_status = 201
     if operation_name == 'REBOOT_EQUIPMENT':
@@ -45,7 +45,7 @@ def opengate_operations_handler(device_id):
     else:
         response_status = 400
 
-    print response_as_json
+    print(response_as_json)
     return response_as_json, response_status
 
 

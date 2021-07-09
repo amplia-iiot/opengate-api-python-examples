@@ -12,7 +12,7 @@ BURST_SIZE = 5
 
 def current_milli_time():
     '''Gets current millis'''
-    return long(round(time.time()))
+    return int(round(time.time()))
 
 
 def add_some_noise(randomize_this):

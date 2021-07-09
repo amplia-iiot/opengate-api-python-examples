@@ -4,10 +4,10 @@ device_north_crud.py [-options]
 Options:
 -h, --help
 -c, --create
--r, --read=deviceid
--u, --update=deviceid
--d, --delete=deviceid
--t, --trusted Enable trusted boot
+-r, --read
+-u, --update
+-d, --delete
+-t, --trusted Create with trusted boot enabled
 -i, --deviceid=deviceid Create with custom device id
 '''
 
@@ -157,13 +157,13 @@ def get_relations(device_id, wifi_id, zigbee_id):
 
 
 def http_post(entity_type, entity_id, entity_as_json, entity_uri):
-    print 'Creating {0} {1}'.format(entity_type, entity_id)
-    print entity_as_json
+    print('Creating {0} {1}'.format(entity_type, entity_id))
+    print(entity_as_json)
     r = requests.post(entity_uri, data=entity_as_json, headers=conf.HEADERS)
-    print 'Status code received {0}'.format(r.status_code)
+    print('Status code received {0}'.format(r.status_code))
     try:
-        # Try to print JSON response
-        print json.dumps(r.json(), indent=2)
+        # Try to print(JSON response)
+        print(json.dumps(r.json(), indent=2))
     except:
         pass # Do nothing if JSON can't be dumped
 
@@ -176,7 +176,7 @@ def http_post(entity_type, entity_id, entity_as_json, entity_uri):
         entity_id_file = open('.{0}_id'.format(entity_type), 'w')
         entity_id_file.write(entity_id)
     except IOError:
-        print 'Can\'t create {0} file'.format(entity_type)
+        print('Can\'t create {0} file'.format(entity_type))
 
 
 def create(device_id=None, trusted_boot=False):
@@ -197,48 +197,48 @@ def create(device_id=None, trusted_boot=False):
         relation_as_json = json.dumps(get_relations(device_id, wifi_id, zigbee_id), indent=2)
         http_post('relation', device_id, relation_as_json, '{0}?action=CREATE'.format(ogapi_relation_uri))
     except Exception as e:
-        print e
+        print(e)
 
 def read(dev_id, wifi_id=None):
-    print 'Reading device {0}'.format(dev_id)
+    print('Reading device {0}'.format(dev_id))
     uri = '{0}/{1}'.format(ogapi_devices_uri, dev_id)
     r = requests.get(uri, headers=conf.HEADERS)
-    print 'Status code received {}'.format(r.status_code)
-    if r.status_code is 200:
-        print json.dumps(json.loads(r.text), indent=2)
+    print('Status code received {}'.format(r.status_code))
+    if r.status_code == 200:
+        print(json.dumps(json.loads(r.text), indent=2))
 
-    print 'Reading wi-fi {0}'.format(wifi_id)
+    print('Reading wi-fi {0}'.format(wifi_id))
     uri = '{0}/{1}'.format(ogapi_wifi_uri, wifi_id)
     r = requests.get(uri, headers=conf.HEADERS)
-    print 'Status code received {}'.format(r.status_code)
-    if r.status_code is 200:
-        print json.dumps(json.loads(r.text), indent=2)
+    print('Status code received {}'.format(r.status_code))
+    if r.status_code == 200:
+        print(json.dumps(json.loads(r.text), indent=2))
 
 
 def update(dev_id, serial):
-    print 'Updating device {0}'.format(dev_id)
+    print('Updating device {0}'.format(dev_id))
     device_as_json = json.dumps(get_device(dev_id, serial=serial), indent=2)
-    print device_as_json
+    print(device_as_json)
     uri = '{0}/{1}'.format(ogapi_devices_uri, dev_id)
     r = requests.put(uri, data=device_as_json, headers=conf.HEADERS)
-    print 'Status code received {}'.format(r.status_code)
-    print r.text
+    print('Status code received {}'.format(r.status_code))
+    print(r.text)
 
 
 def delete(dev_id, wifi_id=None):
     # Relation between device and wi-fi module is automatically removed when device or wi-fi is deleted
     if wifi_id is not None:
-        print 'Deleting wi-fi {0}'.format(wifi_id)
+        print('Deleting wi-fi {0}'.format(wifi_id))
         uri = '{0}/{1}'.format(ogapi_wifi_uri, wifi_id)
         r = requests.delete(uri, headers=conf.HEADERS)
-        print 'Status code received {}'.format(r.status_code)
-        print r.text
+        print('Status code received {}'.format(r.status_code))
+        print(r.text)
 
-    print 'Deleting device {0}'.format(dev_id)
+    print('Deleting device {0}'.format(dev_id))
     uri = '{0}/{1}'.format(ogapi_devices_uri, dev_id)
     r = requests.delete(uri, headers=conf.HEADERS)
-    print 'Status code received {}'.format(r.status_code)
-    print r.text
+    print('Status code received {}'.format(r.status_code))
+    print(r.text)
 
 
 def load_ids():
@@ -252,7 +252,7 @@ def load_ids():
             device_id_file = open('.device_id', 'r')
             device_id = device_id_file.read().strip()
         except IOError:
-            print 'Can\'t read device_id file'
+            print('Can\'t read device_id file')
 
     if conf.DEFAULT_WIFI_ID is not None:
         wifi_id = conf.DEFAULT_WIFI_ID
@@ -261,7 +261,7 @@ def load_ids():
             wifi_id_file = open('.wifi_id', 'r')
             wifi_id = wifi_id_file.read().strip()
         except IOError:
-            print 'Can\'t read device_id file'
+            print('Can\'t read device_id file')
 
     return device_id, wifi_id
 
@@ -269,20 +269,20 @@ def load_ids():
 def main():
     try:  # parse command line options
         opts, args = getopt.getopt(sys.argv[1:], 'hcrudti:', ['help', 'create', 'read', 'update', 'delete', 'trusted', 'deviceid'])
-    except getopt.error, msg:
-        print msg
-        print 'for help use --help'
+    except getopt.error as msg:
+        print(msg)
+        print('for help use --help')
         sys.exit(2)
 
-    if len(opts) is 0:
-        print __doc__
+    if len(opts) == 0:
+        print(__doc__)
         sys.exit(0)
 
     box_ids = load_ids()
 
     for o, a in opts:  # process options
         if o in ('-h', '--help'):
-            print __doc__
+            print(__doc__)
             sys.exit(0)
         elif o in ('-c', '--create'):
             create()
@@ -297,7 +297,7 @@ def main():
         elif o in ('-i', '--deviceid'):
             create(a)
         else:
-            print __doc__
+            print(__doc__)
             sys.exit(0)
 
 

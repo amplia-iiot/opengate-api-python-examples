@@ -151,22 +151,22 @@ def update(device_id, dry_run, max_datastreams):
         while len(message['datastreams']) > max_datastreams:
             del message['datastreams'][random.randint(0, len(message['datastreams']) - 1)]
     device_as_json = json.dumps(message, indent=2)
-    print device_as_json
+    print(device_as_json)
     if not dry_run:
-        print 'Sending packet as {0}'.format(device_id)
+        print('Sending packet as {0}'.format(device_id))
         ogapi_devices_uri = '{0}/devices/{1}/collect/iot'\
             .format(conf.OG_SOUTH_API_BASE_URI, device_id)
         response = requests.post(ogapi_devices_uri, data=device_as_json,
                                  headers=conf.HEADERS)
-        print 'Status code received {}'.format(response.status_code)
-        print response.text
+        print('Status code received {}'.format(response.status_code))
+        print(response.text)
 
 def main():
     try: # parse command line options
         opts, args = getopt.getopt(sys.argv[1:], 'hi:n:', ['help', 'identifier=', 'number-of-datastreams=', 'dry-run'])
-    except getopt.error, msg:
-        print msg
-        print 'For help use --help'
+    except getopt.error as msg:
+        print(msg)
+        print('For help use --help')
         sys.exit(2)
 
     device_id = None
@@ -179,27 +179,27 @@ def main():
             device_id_file = open('.device_id', 'r')
             device_id = device_id_file.read().strip()
         except IOError:
-            print 'Can\'t read device_id file'
+            print('Can\'t read device_id file')
 
     for option, argument in opts: # process options
         if option in ('-h', '--help'):
-            print __doc__
+            print(__doc__)
             sys.exit(0)
         elif option in ('-i', '--identifier'):
             device_id = argument
-            print 'Using device id: ' + device_id
+            print('Using device id: ' + device_id)
         elif option in ('-n', '--number-of-datastreams'):
             max_datastreams = int(argument)
-            print 'Sending a maximum of {0} datapoints'.format(max_datastreams)
+            print('Sending a maximum of {0} datapoints'.format(max_datastreams))
         elif option in ('--dry-run'):
             dry_run = True
-            print 'Executing without sending message'
+            print('Executing without sending message')
         else:
-            print __doc__
+            print(__doc__)
             sys.exit(0)
 
     if device_id is None:
-        print 'Please, provide a device identifier'
+        print('Please, provide a device identifier')
     else:
         update(device_id, dry_run, max_datastreams)
 

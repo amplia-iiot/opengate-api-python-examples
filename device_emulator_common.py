@@ -42,7 +42,7 @@ def multi_step_response(content, device_id, publish_operation_step_response):
     '''
     # Wait 2 seconds before start the file download operation
     sleep(2)
-    print 'Multi-step response process'
+    print('Multi-step response process')
 
     parameters = content['operation']['request']['parameters']
     download_status = None
@@ -57,12 +57,12 @@ def multi_step_response(content, device_id, publish_operation_step_response):
                     content, device_id, 'DOWNLOADFILE', 'SUCCESSFUL', False)
                 sleep(2)
 
-                print 'Downloading {0}...'.format(download_url)
+                print('Downloading {0}...'.format(download_url))
                 response = requests.get(
                     download_url, headers=conf.HEADERS, stream=True)
-                print 'Status code received {}'.format(response.status_code)
+                print('Status code received {}'.format(response.status_code))
                 if response.status_code == 200:
-                    print 'Writing file to disk...'
+                    print('Writing file to disk...')
                     with open(file_path, 'wb') as downloading_file:
                         for chunk in response:
                             downloading_file.write(chunk)
@@ -70,14 +70,14 @@ def multi_step_response(content, device_id, publish_operation_step_response):
                     publish_operation_step_response(
                         content, device_id, 'ENDINSTALL', 'SUCCESSFUL', False)
                     download_status = 'SUCCESSFUL'
-                    print '...done'
+                    print('...done')
                     sleep(2)
 
                 else:
                     publish_operation_step_response(
                         content, device_id, 'DOWNLOADFILE', 'ERROR', False)
                     download_status = 'ERROR'
-                    print 'Something went wrong downloading file'
+                    print('Something went wrong downloading file')
                     sleep(2)
 
     publish_operation_step_response(
@@ -87,7 +87,7 @@ def multi_step_response(content, device_id, publish_operation_step_response):
 def reboot(content, device_id):
     '''REBOOT_EQUIPMENT response emulation'''
 
-    print 'Simulating the reboot of the equipment'
+    print('Simulating the reboot of the equipment')
     operation_id = content['operation']['request']['id']
     response = {
         'version': '7.0',

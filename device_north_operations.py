@@ -19,11 +19,11 @@ ogapi_jobs_uri = '{0}/operation/jobs'.format(conf.OG_NORTH_API_BASE_URI)
 
 
 def http_post(entity_id, entity_as_json, entity_uri):
-    print 'Sending job to device {0}'.format(entity_id)
-    print entity_as_json
+    print('Sending job to device {0}'.format(entity_id))
+    print(entity_as_json)
     r = requests.post(entity_uri, data=entity_as_json, headers=conf.HEADERS)
-    print 'Status code received {}'.format(r.status_code)
-    print json.dumps(r.json(), indent=2)
+    print('Status code received {}'.format(r.status_code))
+    print(json.dumps(r.json(), indent=2))
 
 
 def reboot(device_id):
@@ -81,7 +81,7 @@ def load_id():
             device_id_file = open('.device_id', 'r')
             device_id = device_id_file.read().strip()
         except IOError:
-            print 'Can\'t read device_id file'
+            print('Can\'t read device_id file')
 
     return device_id
 
@@ -89,27 +89,27 @@ def load_id():
 def main():
     try:  # parse command line options
         opts, args = getopt.getopt(sys.argv[1:], 'hru', ['help', 'reboot', 'update'])
-    except getopt.error, msg:
-        print msg
-        print 'for help use --help'
+    except getopt.error as msg:
+        print(msg)
+        print('for help use --help')
         sys.exit(2)
 
-    if len(opts) is 0:
-        print __doc__
+    if len(opts) == 0:
+        print(__doc__)
         sys.exit(0)
 
     device_id = load_id()
 
     for o, a in opts:  # process options
         if o in ('-h', '--help'):
-            print __doc__
+            print(__doc__)
             sys.exit(0)
         elif o in ('-r', '--read'):
             reboot(device_id)
         elif o in ('-u', '--update'):
             update(device_id)
         else:
-            print __doc__
+            print(__doc__)
             sys.exit(0)
 
 
